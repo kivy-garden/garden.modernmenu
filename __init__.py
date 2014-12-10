@@ -1,5 +1,6 @@
 '''A round menu that appears on a long touch
 '''
+from __future__ import print_function
 from kivy.uix.widget import Widget
 from kivy.uix.label import Label
 from kivy.uix.behaviors import ButtonBehavior
@@ -76,7 +77,9 @@ KV = '''
 '''
 
 
-def dist((x1, y1), (x2, y2)):
+def dist(p1, p2):
+    (x1, y1) = p1
+    (x2, y2) = p2
     return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 5
 
 
@@ -242,7 +245,7 @@ class ModernMenuApp(App):
         return Builder.load_string(TESTAPP_KV)
 
     def callback1(self, *args):
-        print "test 1"
+        print("test 1")
         args[0].parent.open_submenu(
             choices=[
                 dict(text='action 1', index=1, callback=self.callback2),
@@ -251,15 +254,15 @@ class ModernMenuApp(App):
             ])
 
     def callback2(self, *args):
-        print "test 2"
+        print("test 2")
         args[0].parent.dismiss()
 
     def callback3(self, *args):
-        print "test 3"
+        print("test 3")
         args[0].parent.dismiss()
 
     def callback4(self, *args):
-        print "test 4"
+        print("test 4")
         args[0].parent.open_submenu(
             choices=[
                 dict(text='hey', index=1, callback=self.callback2),
@@ -267,7 +270,7 @@ class ModernMenuApp(App):
             ])
 
     def callback5(self, *args):
-        print "test 5"
+        print("test 5")
         args[0].parent.dismiss()
 
 
