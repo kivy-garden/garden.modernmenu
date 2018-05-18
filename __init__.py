@@ -46,6 +46,8 @@ KV = '''
 <ModernMenuLabel>:
     size: self.texture_size
     padding: 5, 5
+    halign: 'center'
+    valign: 'middle'
     on_press: self.callback and self.callback(self)
 
     canvas.before:
