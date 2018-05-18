@@ -13,6 +13,7 @@ from kivy.app import App
 
 from functools import partial
 from copy import copy
+from math import pi
 
 KV = '''
 #:import pi math.pi
@@ -59,10 +60,12 @@ KV = '''
                 (
                 self.center_x, self.center_y,
                 self.parent.center_x + cos(
-                self.opacity * self.index * 2 * pi / self.siblings
+                self.start_angle +
+                self.opacity * self.index_adj * self.angle / self.siblings_adj
                 ) * self.parent.radius,
                 self.parent.center_y + sin(
-                self.opacity * self.index * 2 * pi / self.siblings
+                self.start_angle +
+                self.opacity * self.index_adj * self.angle / self.siblings_adj
                 ) * self.parent.radius
                 ) if self.parent else []
             width: self.parent.line_width if self.parent else 1
@@ -70,9 +73,13 @@ KV = '''
     center:
         (
         self.parent.center_x +
-        cos(self.opacity * self.index * 2 * pi / self.siblings) * self.radius,
+        cos(self.start_angle +
+        self.opacity * self.index_adj * self.angle / self.siblings_adj
+        ) * self.radius,
         self.parent.center_y +
-        sin(self.opacity * self.index * 2 * pi / self.siblings) * self.radius
+        sin(self.start_angle +
+        self.opacity * self.index_adj * self.angle / self.siblings_adj
+        ) * self.radius
         ) if (self.size and self.parent and self.parent.children) else (0, 0)
 '''
 
@@ -89,15 +96,50 @@ class ModernMenuLabel(ButtonBehavior, Label):
     siblings = NumericProperty(1)
     callback = ObjectProperty(None)
 
+    def calculate_angle(self, *args):
+        if self.parent is None:
+            return
+        factor = 2.0
+        self.start_angle = 0
+        left = top = False
+        if self.parent.center_x < self.radius:
+            factor /= 2
+            self.start_angle = 1.5 * pi
+            left = True
+        if self.parent.center_y < self.radius:
+            factor /= 2
+            self.start_angle = 0
+        if self.parent.parent:
+            if self.parent.center_y + self.radius > self.parent.parent.height:
+                factor /= 2
+                self.start_angle = 1.5 * pi if left else pi
+                top = True
+            if self.parent.center_x + self.radius > self.parent.parent.width:
+                factor /= 2
+                self.start_angle = pi if top else pi / 2
+        self.angle = factor * pi
+        # index adjustment: if 1, the items will spread the whole angle,
+        #                   which is what we want if angle is < 2 * pi
+        #                   if angle is 2 * pi, first item would be at the
+        #                   same location as the last one, so we set 0
+        idx_adj = 0 if factor == 2 else 1
+        self.index_adj = self.index - idx_adj
+        self.siblings_adj = max(1, self.siblings - idx_adj)
+
     def on_parent(self, *args):
         if self.parent:
-            self.parent.bind(children=self.update_siblings)
+            self.parent.bind(children=self.update_siblings,
+                             center=self.calculate_angle)
+            if self.parent.parent:
+                self.parent.parent.bind(size=self.calculate_angle)
+            self.calculate_angle()
 
     def update_siblings(self, *args):
         if self.parent:
-            self.siblings = max(0, len(self.parent.children))
+            self.siblings = max(1, len(self.parent.children))
         else:
             self.siblings = 1
+        self.calculate_angle()
 
 
 class ModernMenu(Widget):
