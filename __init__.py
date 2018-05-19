@@ -53,7 +53,7 @@ KV = '''
 
     canvas.before:
         Color:
-            rgba: .1, .4, .4, .9
+            rgba: self.bg_color
         Rectangle:
             pos: self.pos
             size: self.size
@@ -97,6 +97,7 @@ class ModernMenuLabel(ButtonBehavior, Label):
     radius = NumericProperty(100)
     siblings = NumericProperty(1)
     callback = ObjectProperty(None)
+    bg_color = ListProperty([.1, .4, .4, .9])
 
     def calculate_angle(self, *args):
         if self.parent is None:
