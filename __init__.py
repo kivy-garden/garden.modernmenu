@@ -86,10 +86,10 @@ KV = '''
 '''
 
 
-def dist(p1, p2):
+def squared_dist(p1, p2):
     (x1, y1) = p1
     (x2, y2) = p2
-    return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 5
+    return ((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
 
 class ModernMenuLabel(ButtonBehavior, Label):
@@ -188,7 +188,7 @@ class ModernMenu(Widget):
     def on_touch_move(self, touch, *args):
         if (
             touch.grab_current == self and
-            dist(touch.pos, touch.opos) > self.radius and
+            squared_dist(touch.pos, touch.opos) > self.radius ** 2 and
             self.parent and
             self.circle_progress < 1
         ):
@@ -230,7 +230,7 @@ class MenuSpawner(Widget):
     def on_touch_move(self, touch, *args):
         if (
             touch.ud['menu_timeout'] and
-            dist(touch.pos, touch.opos) > self.cancel_distance
+            squared_dist(touch.pos, touch.opos) > self.cancel_distance ** 2
         ):
             Clock.unschedule(touch.ud['menu_timeout'])
         return super(MenuSpawner, self).on_touch_move(touch, *args)
