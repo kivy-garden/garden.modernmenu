@@ -1,3 +1,6 @@
+** NOTE: THIS REPO IS UNMAINTAINED, THIS FLOWER HAS BEEN PORTED TO NEW INFRASTRUCTURE, PLEASE USE <https://github.com/kivy-garden/modernmenu> **
+
+
 <img src="https://github.com/kivy-garden/garden.modernmenu/blob/master/screenshot.png" align="right" width="256" />
 
 
